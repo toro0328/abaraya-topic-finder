@@ -812,19 +812,13 @@
     "url": "https://podcasts.apple.com/jp/podcast/id976856180/episodes",
     "audio": null,
     "summary": "",
-    "tags": [
-      "コーナー：リンガーハット豆知識"
-    ],
+    "tags": [],
     "chapters": [],
     "mentions": [],
     "listen": null,
     "era": "pre-r",
-    "corners": [
-      "リンガーハット豆知識"
-    ],
-    "headings": [
-      "コーナー：リンガーハット豆知識"
-    ]
+    "corners": [],
+    "headings": []
   },
   {
     "id": "legacy-64",
@@ -1724,19 +1718,13 @@
     "url": "https://podcasts.apple.com/jp/podcast/id976856180/episodes",
     "audio": null,
     "summary": "",
-    "tags": [
-      "コーナー：あばログ"
-    ],
+    "tags": [],
     "chapters": [],
     "mentions": [],
     "listen": null,
     "era": "pre-r",
-    "corners": [
-      "あばログ"
-    ],
-    "headings": [
-      "コーナー：あばログ"
-    ]
+    "corners": [],
+    "headings": []
   },
   {
     "id": "legacy-128",
