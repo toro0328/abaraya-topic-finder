@@ -1718,13 +1718,19 @@
     "url": "https://podcasts.apple.com/jp/podcast/id976856180/episodes",
     "audio": null,
     "summary": "",
-    "tags": [],
+    "tags": [
+      "コーナー：あばログ"
+    ],
     "chapters": [],
     "mentions": [],
     "listen": null,
     "era": "pre-r",
-    "corners": [],
-    "headings": []
+    "corners": [
+      "あばログ"
+    ],
+    "headings": [
+      "コーナー：あばログ"
+    ]
   },
   {
     "id": "legacy-128",
@@ -1746,11 +1752,19 @@
     "url": "https://podcasts.apple.com/jp/podcast/id976856180/episodes",
     "audio": null,
     "summary": "",
-    "tags": [],
+    "tags": [
+      "コーナー：あばログ"
+    ],
     "chapters": [],
     "mentions": [],
     "listen": null,
-    "era": "pre-r"
+    "era": "pre-r",
+    "corners": [
+      "あばログ"
+    ],
+    "headings": [
+      "コーナー：あばログ"
+    ]
   },
   {
     "id": "legacy-130",
