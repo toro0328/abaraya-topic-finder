@@ -1158,8 +1158,7 @@
     "audio": null,
     "summary": "",
     "tags": [
-      "コーナー：ニタクサグリタグリ",
-      "お便りテーマ：コーナー案募集"
+      "コーナー：ニタクサグリタグリ"
     ],
     "chapters": [],
     "mentions": [],
@@ -1171,10 +1170,7 @@
     "headings": [
       "コーナー：ニタクサグリタグリ"
     ],
-    "mailTheme": "あばらやでやってほしいコーナーは？",
-    "mailThemeCategories": [
-      "コーナー案募集"
-    ]
+    "mailTheme": "あばらやでやってほしいコーナーは？"
   },
   {
     "id": "legacy-83",
@@ -1205,8 +1201,7 @@
     "audio": null,
     "summary": "",
     "tags": [
-      "コーナー：ニタクサグリタグリ",
-      "お便りテーマ：英語力"
+      "コーナー：ニタクサグリタグリ"
     ],
     "chapters": [],
     "mentions": [],
@@ -1218,10 +1213,7 @@
     "headings": [
       "コーナー：ニタクサグリタグリ"
     ],
-    "mailTheme": "あなたの英語力を全力でメッセージください",
-    "mailThemeCategories": [
-      "英語力"
-    ]
+    "mailTheme": "あなたの英語力を全力でメッセージください"
   },
   {
     "id": "legacy-85",
@@ -1231,8 +1223,7 @@
     "audio": null,
     "summary": "",
     "tags": [
-      "コーナー：ニタクサグリタグリ",
-      "お便りテーマ：英語力"
+      "コーナー：ニタクサグリタグリ"
     ],
     "chapters": [],
     "mentions": [],
@@ -1244,10 +1235,7 @@
     "headings": [
       "コーナー：ニタクサグリタグリ"
     ],
-    "mailTheme": "前回に引き続き、あなたの英語力を全力でメッセージください",
-    "mailThemeCategories": [
-      "英語力"
-    ]
+    "mailTheme": "前回に引き続き、あなたの英語力を全力でメッセージください"
   },
   {
     "id": "legacy-86",
@@ -1320,8 +1308,7 @@
     "audio": null,
     "summary": "",
     "tags": [
-      "コーナー：ニタクサグリタグリ",
-      "お便りテーマ：コーナー案募集"
+      "コーナー：ニタクサグリタグリ"
     ],
     "chapters": [],
     "mentions": [],
@@ -1333,10 +1320,7 @@
     "headings": [
       "コーナー：ニタクサグリタグリ"
     ],
-    "mailTheme": "新コーナーを考えてください（他力本願）",
-    "mailThemeCategories": [
-      "コーナー案募集"
-    ]
+    "mailTheme": "新コーナーを考えてください（他力本願）"
   },
   {
     "id": "legacy-90",
@@ -1345,17 +1329,12 @@
     "url": "https://podcasts.apple.com/jp/podcast/id976856180/episodes",
     "audio": null,
     "summary": "",
-    "tags": [
-      "お便りテーマ：コーナー案募集"
-    ],
+    "tags": [],
     "chapters": [],
     "mentions": [],
     "listen": null,
     "era": "pre-r",
-    "mailTheme": "引き続き新コーナーを考えてください（他力本願）",
-    "mailThemeCategories": [
-      "コーナー案募集"
-    ]
+    "mailTheme": "引き続き新コーナーを考えてください（他力本願）"
   },
   {
     "id": "legacy-91",
