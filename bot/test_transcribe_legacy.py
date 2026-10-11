@@ -25,6 +25,13 @@ class TranscriptDiscoveryTests(unittest.TestCase):
         </item></channel></rss>"""
         self.assertIsNone(rss_audio_for_episode(feed, self.episode))
 
+    def test_same_number_bonus_does_not_match_regular_episode(self):
+        bonus = {"id": "legacy-134-bonus", "title": "第134回のおまけ「タカハシ眠すぎ」"}
+        feed = """<rss><channel><item><title>第134回「最終回」</title>
+        <enclosure url="https://cdn.example.test/regular.mp3"/>
+        </item></channel></rss>"""
+        self.assertIsNone(rss_audio_for_episode(feed, bonus))
+
     def test_ignores_non_https_enclosures(self):
         feed = """<rss><channel><item><title>第135回「最終回」</title>
         <enclosure url="http://cdn.example.test/episode.mp3"/>
