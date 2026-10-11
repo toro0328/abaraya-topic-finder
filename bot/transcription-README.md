@@ -5,7 +5,7 @@ The old-show episodes are kept in `legacy-episodes.json` and addressed by IDs su
 ## Run
 
 1. Open **Actions → Transcribe a legacy episode → Run workflow**.
-2. Enter the episode number. The script checks the legacy Seesaa RSS enclosure first.
+2. Enter its exact ID from `legacy-episodes.json` (for example `legacy-135` or `legacy-134-bonus`). This also handles the separately listed bonus episode 134. The script checks the legacy Seesaa RSS enclosure first.
 3. If the feed no longer contains the episode, supply its direct HTTPS audio URL in `audio_url`.
 4. Start with `tiny` for a quick connectivity check; choose `base` or `small` for a more accurate draft.
 5. Download the artifact and review it before merging its episode entry into `legacy-transcripts.json`.
