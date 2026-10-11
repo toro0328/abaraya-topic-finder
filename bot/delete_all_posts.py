@@ -34,7 +34,11 @@ def build_session():
 
 def get_all_posts(session: requests.Session) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     me_response = session.get(f"{API}/users/me", params={"user.fields": "id,username"}, timeout=30)
-    me_response.raise_for_status()
+    if not me_response.ok:
+        # X returns a short JSON error for auth failures; include it for diagnosis,
+        # while never printing request headers or credential values.
+        detail = me_response.text[:1000]
+        raise RuntimeError(f"X API /users/me returned HTTP {me_response.status_code}: {detail}")
     me = me_response.json().get("data")
     if not me or not me.get("id"):
         raise RuntimeError("X did not return the authenticated account.")
