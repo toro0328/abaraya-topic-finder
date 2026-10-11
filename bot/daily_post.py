@@ -10,7 +10,8 @@ import re
 import sys
 import time
 import unicodedata
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -140,7 +141,7 @@ def post_to_x(text: str) -> dict[str, Any]:
 
 
 def main() -> None:
-    now = date.today()
+    now = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     posts = choose_daily_posts(load_episodes(), now)
     dry_run = os.environ.get("DRY_RUN", "true").lower() in {"1", "true", "yes"}
     for index, text in enumerate(posts, start=1):
