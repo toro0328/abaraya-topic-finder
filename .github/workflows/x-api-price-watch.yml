@@ -1,0 +1,52 @@
+name: Watch X API post creation price
+
+on:
+  schedule:
+    # 20:20 JST (GitHub Actions cron uses UTC).
+    - cron: "20 11 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview only; set false to publish an increase alert"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: x-api-price-watch
+  cancel-in-progress: false
+
+jobs:
+  check-price:
+    runs-on: ubuntu-latest
+    env:
+      DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || inputs.dry_run }}
+      PRICE_STATE_PATH: bot/data/x_api_post_create_price.json
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_SECRET: ${{ secrets.X_API_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install -r bot/requirements.txt
+      - name: Check official price and post on increase
+        run: python bot/x_api_price_watch.py
+      - name: Save updated price baseline
+        if: success() && env.DRY_RUN == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bot/data/x_api_post_create_price.json
+          if git diff --cached --quiet; then
+            echo "No baseline change."
+            exit 0
+          fi
+          git commit -m "Update X API price baseline"
+          git push

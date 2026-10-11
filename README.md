@@ -13,3 +13,7 @@
 ## GitHub Pages
 
 GitHub Actionsから静的ファイルを公開します。`main`へのpushで `.github/workflows/pages.yml` が実行されます。
+
+## X API料金の値上げ通知
+
+`bot/x_api_price_watch.py` はX公式の料金ページにある「Post: Create」の料金を1日1回確認します。現在の基準額より高くなった場合だけ、Xアカウントから値上げを知らせる投稿を1回行い、基準額を更新します。価格情報を安全に読み取れない場合は投稿せず、Actionsを失敗として記録します。手動実行は `dry_run=true` が初期値です。
