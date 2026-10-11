@@ -30,3 +30,14 @@ python -m pip install -r bot/requirements.txt
 python -m unittest discover -s bot -p 'test_*.py'
 DRY_RUN=true python bot/daily_post.py
 ```
+
+
+## 既存アカウントの投稿を空にする
+
+同じXアカウントのOAuth 1.0a認証情報をRepository secretsに登録したあと、GitHubの **Actions → Clean up X account posts → Run workflow** を開きます。
+
+1. 初回は `dry_run=true` のまま実行し、対象アカウント名と投稿件数を確認します。投稿は消えません。
+2. 対象が合っていて、表示件数が想定どおり（例：191件）なら、もう一度実行して `dry_run=false`、`expected_count` にその件数を入力します。
+3. 投稿IDごとに削除します。件数が一致しなければ処理を止めます。APIのレート制限時はリセットまで待ってから続行します。
+
+削除は取り消せません。X APIで対象になるのは、認証したアカウント自身の投稿です。認証情報をチャットに貼らず、GitHub Secretsにだけ登録してください。
