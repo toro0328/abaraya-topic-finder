@@ -30,7 +30,7 @@ class DeletePostsTests(unittest.TestCase):
             "X_ACCESS_TOKEN_SECRET": "token-secret",
             "CONFIRM_DELETE_COUNT": count,
         }
-        with patch.dict(os.environ, env), patch.object(cleanup.requests, "Session", return_value=self.session), patch(
+        with patch.dict(os.environ, env), patch.object(cleanup, "build_session", return_value=self.session), patch(
             "sys.argv", ["delete_all_posts.py", *args]
         ):
             return cleanup.main()
