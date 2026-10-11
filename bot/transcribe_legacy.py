@@ -48,10 +48,7 @@ def rss_audio_for_episode(xml_text: str, episode: dict) -> str | None:
         if wanted_no is not None and item_no_match and int(item_no_match.group(1)) != wanted_no:
             continue
         normalized = normalize_title(title)
-        if wanted_no is not None and item_no_match:
-            title_matches = True
-        else:
-            title_matches = wanted_title and (wanted_title in normalized or normalized in wanted_title)
+        title_matches = wanted_title and (wanted_title in normalized or normalized in wanted_title)
         if not title_matches:
             continue
         enclosure = item.find("enclosure")
@@ -73,7 +70,7 @@ def discover_audio(episode: dict) -> str:
     if not audio_url:
         no = episode_number(episode)
         raise RuntimeError(
-            f"Episode {no or episode.get('id')} was not found in the current RSS feed. "
+            f"Episode {episode.get('id')} was not found in the current RSS feed. "
             "The legacy feed may only contain recent episodes; rerun with --audio-url "
             "and the episode's direct audio file URL."
         )
@@ -133,7 +130,7 @@ def transcribe(audio_path: Path, episode: dict, audio_url: str, model_name: str)
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--episode", type=int, required=True, help="Legacy episode number")
+    parser.add_argument("--episode-id", required=True, help="Stable ID from legacy-episodes.json, e.g. legacy-134-bonus")
     parser.add_argument("--audio-url", help="Direct HTTPS audio URL; otherwise look in the legacy RSS feed")
     parser.add_argument("--model", choices=("tiny", "base", "small"), default="tiny")
     parser.add_argument("--output", type=Path, default=Path("legacy-transcripts.generated.json"))
@@ -141,9 +138,9 @@ def main() -> int:
 
     try:
         episodes = json.loads(LEGACY_FILE.read_text(encoding="utf-8"))
-        episode = next((ep for ep in episodes if episode_number(ep) == args.episode), None)
+        episode = next((ep for ep in episodes if ep.get("id") == args.episode_id), None)
         if not episode:
-            raise ValueError(f"Episode {args.episode} is not present in legacy-episodes.json.")
+            raise ValueError(f"Episode ID {args.episode_id!r} is not present in legacy-episodes.json.")
         audio_url = args.audio_url or episode.get("audio") or discover_audio(episode)
         temp_audio = Path("transcription-input.audio")
         try:
