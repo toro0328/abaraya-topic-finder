@@ -61,7 +61,7 @@ def format_post(heading: str, episode: dict[str, Any]) -> str:
     url = str(episode.get("url") or "")
     label = episode_label(episode)
     def render(candidate: str) -> str:
-        return f"{heading}\n【{label}】{candidate}\n{url}\n#あばらや".rstrip()
+        return f"{heading}\n【{label}】{candidate}\n{url}".rstrip()
 
     if weighted_length(render(title)) <= MAX_WEIGHTED_LENGTH:
         return render(title)
