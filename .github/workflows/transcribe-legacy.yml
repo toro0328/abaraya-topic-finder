@@ -1,0 +1,61 @@
+name: Transcribe a legacy episode
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Legacy episode ID, e.g. legacy-135 or legacy-134-bonus"
+        required: true
+        type: string
+      audio_url:
+        description: "Optional direct HTTPS audio URL if the old RSS feed no longer lists the episode"
+        required: false
+        type: string
+      model:
+        description: "CPU model size; larger is slower and usually more accurate"
+        required: true
+        default: tiny
+        type: choice
+        options:
+          - tiny
+          - base
+          - small
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legacy-transcription-${{ inputs.episode_id }}
+  cancel-in-progress: false
+
+jobs:
+  transcribe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-transcription.txt
+      - name: Install CPU transcription engine
+        run: python -m pip install -r requirements-transcription.txt
+      - name: Validate source data
+        run: python -m unittest discover -s bot -p 'test_transcribe_*.py'
+      - name: Transcribe selected episode
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
+          AUDIO_URL: ${{ inputs.audio_url }}
+          MODEL: ${{ inputs.model }}
+        run: |
+          args=(--episode-id "$EPISODE_ID" --model "$MODEL" --output artifacts/legacy-transcripts.json)
+          if [ -n "$AUDIO_URL" ]; then args+=(--audio-url "$AUDIO_URL"); fi
+          python bot/transcribe_legacy.py "${args[@]}"
+      - name: Upload reviewable transcript draft
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-transcript-episode-${{ inputs.episode_id }}
+          path: artifacts/legacy-transcripts.json
+          if-no-files-found: error
+          retention-days: 14

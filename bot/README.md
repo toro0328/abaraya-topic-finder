@@ -10,6 +10,10 @@
 
 選択結果は日付をもとに決まるので、同じ日のプレビューは毎回同じです。投稿はX API v2の投稿エンドポイントを使います。
 
+## 旧回の文字起こし
+
+旧回の音声からWhisperのタイムスタンプ付き下書きを作る手順は [`transcription-README.md`](transcription-README.md) を参照してください。
+
 ## 初期設定
 
 1. X Developer Portalでアプリを作成し、ユーザー認証をOAuth 1.0aに設定して、投稿権限を有効にします。
