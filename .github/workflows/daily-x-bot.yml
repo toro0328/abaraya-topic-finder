@@ -2,8 +2,8 @@ name: Daily Ababaya X posts
 
 on:
   schedule:
-    # 09:05 JST (GitHub Actions cron uses UTC).
-    - cron: "5 0 * * *"
+    # 20:00 JST (GitHub Actions cron uses UTC).
+    - cron: "0 11 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
