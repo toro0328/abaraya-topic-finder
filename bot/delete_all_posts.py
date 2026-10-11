@@ -11,13 +11,13 @@ import sys
 import time
 from typing import Any
 
-import requests
-from requests_oauthlib import OAuth1
-
 API = "https://api.x.com/2"
 
 
-def oauth() -> OAuth1:
+def build_session():
+    import requests
+    from requests_oauthlib import OAuth1
+
     values = {
         "client_key": os.environ.get("X_API_KEY"),
         "client_secret": os.environ.get("X_API_SECRET"),
@@ -27,7 +27,9 @@ def oauth() -> OAuth1:
     missing = [key for key, value in values.items() if not value]
     if missing:
         raise RuntimeError("Missing X credentials: " + ", ".join(missing))
-    return OAuth1(**values)
+    session = requests.Session()
+    session.auth = OAuth1(**values)
+    return session
 
 
 def get_all_posts(session: requests.Session) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -75,8 +77,7 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        session = requests.Session()
-        session.auth = oauth()
+        session = build_session()
         me, posts = get_all_posts(session)
         username = me.get("username", "unknown")
         print(f"Account: @{username}")
