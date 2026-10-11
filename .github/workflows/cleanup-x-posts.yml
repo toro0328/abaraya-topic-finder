@@ -1,15 +1,15 @@
-name: Clean up X account posts
+name: Preview or clean up X account posts
 
 on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Preview the account and post count only"
+        description: "Preview account and post count only"
         required: true
         default: true
         type: boolean
       expected_count:
-        description: "Required for deletion: type the exact count shown by the preview"
+        description: "Required for deletion: exact count from preview"
         required: false
         type: string
 
