@@ -3,8 +3,8 @@ name: Transcribe a legacy episode
 on:
   workflow_dispatch:
     inputs:
-      episode:
-        description: "Legacy episode number (1–136; include 134 for bonus)"
+      episode_id:
+        description: "Legacy episode ID, e.g. legacy-135 or legacy-134-bonus"
         required: true
         type: string
       audio_url:
@@ -25,7 +25,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: legacy-transcription-${{ inputs.episode }}
+  group: legacy-transcription-${{ inputs.episode_id }}
   cancel-in-progress: false
 
 jobs:
@@ -45,17 +45,17 @@ jobs:
         run: python -m unittest discover -s bot -p 'test_transcribe_*.py'
       - name: Transcribe selected episode
         env:
-          EPISODE: ${{ inputs.episode }}
+          EPISODE_ID: ${{ inputs.episode_id }}
           AUDIO_URL: ${{ inputs.audio_url }}
           MODEL: ${{ inputs.model }}
         run: |
-          args=(--episode "$EPISODE" --model "$MODEL" --output artifacts/legacy-transcripts.json)
+          args=(--episode-id "$EPISODE_ID" --model "$MODEL" --output artifacts/legacy-transcripts.json)
           if [ -n "$AUDIO_URL" ]; then args+=(--audio-url "$AUDIO_URL"); fi
           python bot/transcribe_legacy.py "${args[@]}"
       - name: Upload reviewable transcript draft
         uses: actions/upload-artifact@v4
         with:
-          name: legacy-transcript-episode-${{ inputs.episode }}
+          name: legacy-transcript-episode-${{ inputs.episode_id }}
           path: artifacts/legacy-transcripts.json
           if-no-files-found: error
           retention-days: 14
