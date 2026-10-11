@@ -121,8 +121,8 @@ def post_to_x(text: str) -> dict[str, Any]:
         raise RuntimeError("Install bot/requirements.txt before posting.") from exc
 
     keys = {
-        "consumer_key": os.environ.get("X_API_KEY"),
-        "consumer_secret": os.environ.get("X_API_SECRET"),
+        "client_key": os.environ.get("X_API_KEY"),
+        "client_secret": os.environ.get("X_API_SECRET"),
         "resource_owner_key": os.environ.get("X_ACCESS_TOKEN"),
         "resource_owner_secret": os.environ.get("X_ACCESS_TOKEN_SECRET"),
     }
