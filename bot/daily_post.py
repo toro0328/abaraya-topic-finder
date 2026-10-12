@@ -161,22 +161,25 @@ def wait_until_jst(
 
     while now < deadline:
         remaining = (deadline - now).total_seconds()
-        sleep_func(min(remaining, 1.0))
+        sleep_func(remaining)
         now = now_func().astimezone(jst)
 
 
 def main() -> None:
     dry_run = os.environ.get("DRY_RUN", "true").lower() in {"1", "true", "yes"}
     wait_until = os.environ.get("WAIT_UNTIL_JST", "").strip()
-    if wait_until and not dry_run:
-        print(f"Waiting until {wait_until} JST before publishing.")
-        wait_until_jst(wait_until)
 
     now = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     posts = choose_daily_posts(load_episodes(), now)
     for index, text in enumerate(posts, start=1):
         if weighted_length(text) > MAX_WEIGHTED_LENGTH:
             raise ValueError(f"Post {index} exceeds X's character limit.")
+
+    if wait_until and not dry_run:
+        print(f"Waiting until {wait_until} JST before publishing.")
+        wait_until_jst(wait_until)
+
+    for index, text in enumerate(posts, start=1):
         print(f"--- Post {index} ({'preview' if dry_run else 'publishing'}) ---")
         print(text)
         if not dry_run:
