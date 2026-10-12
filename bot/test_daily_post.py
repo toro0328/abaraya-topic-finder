@@ -1,7 +1,8 @@
 import unittest
-from datetime import date
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
-from daily_post import choose_daily_posts, weighted_length
+from daily_post import choose_daily_posts, wait_until_jst, weighted_length
 
 
 class DailyPostTests(unittest.TestCase):
@@ -32,6 +33,28 @@ class DailyPostTests(unittest.TestCase):
     def test_post_length_counts_urls_as_fixed_weight(self):
         self.assertEqual(weighted_length("abc https://example.com"), 27)
 
+
+    def test_waits_until_target_in_japan_time(self):
+        clock = [datetime(2026, 10, 12, 19, 59, 59, 500000, tzinfo=ZoneInfo("Asia/Tokyo"))]
+        sleeps = []
+
+        def sleep_for(seconds):
+            sleeps.append(seconds)
+            clock[0] += timedelta(seconds=seconds)
+
+        wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleep_for)
+        self.assertEqual(sleeps, [0.5])
+        self.assertEqual(clock[0].strftime("%H:%M:%S"), "20:00:00")
+
+    def test_does_not_wait_if_target_has_passed(self):
+        clock = [datetime(2026, 10, 12, 20, 0, 1, tzinfo=ZoneInfo("Asia/Tokyo"))]
+        sleeps = []
+        wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleeps.append)
+        self.assertEqual(sleeps, [])
+
+    def test_rejects_invalid_wait_time(self):
+        with self.assertRaises(ValueError):
+            wait_until_jst("25:00", now_func=lambda: datetime.now(ZoneInfo("Asia/Tokyo")))
 
 if __name__ == "__main__":
     unittest.main()
