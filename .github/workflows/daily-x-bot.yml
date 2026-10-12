@@ -2,8 +2,8 @@ name: Daily Ababaya X posts
 
 on:
   schedule:
-    # 20:00 JST (GitHub Actions cron uses UTC).
-    - cron: "0 11 * * *"
+    # Start at 19:40 JST (10:40 UTC), then wait until 20:00 JST before posting.
+    - cron: "40 10 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || inputs.dry_run }}
+      WAIT_UNTIL_JST: ${{ github.event_name == 'schedule' && '20:00' || '' }}
       X_API_KEY: ${{ secrets.X_API_KEY }}
       X_API_SECRET: ${{ secrets.X_API_SECRET }}
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
