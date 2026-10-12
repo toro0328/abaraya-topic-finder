@@ -11,9 +11,9 @@ import sys
 import time
 import unicodedata
 from datetime import date, datetime
-from zoneinfo import ZoneInfo
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
+from zoneinfo import ZoneInfo
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -140,10 +140,40 @@ def post_to_x(text: str) -> dict[str, Any]:
     return response.json()
 
 
+def wait_until_jst(
+    target: str,
+    now_func: Callable[[], datetime] | None = None,
+    sleep_func: Callable[[float], None] | None = None,
+) -> None:
+    """Wait until today's HH:MM in Japan time. If already past, continue immediately."""
+    try:
+        hour, minute = (int(part) for part in target.split(":"))
+    except (ValueError, TypeError) as exc:
+        raise ValueError("WAIT_UNTIL_JST must use HH:MM format.") from exc
+    if not (0 <= hour <= 23 and 0 <= minute <= 59):
+        raise ValueError("WAIT_UNTIL_JST must be a valid 24-hour time.")
+
+    jst = ZoneInfo("Asia/Tokyo")
+    now_func = now_func or (lambda: datetime.now(jst))
+    sleep_func = sleep_func or time.sleep
+    now = now_func().astimezone(jst)
+    deadline = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+    while now < deadline:
+        remaining = (deadline - now).total_seconds()
+        sleep_func(min(remaining, 1.0))
+        now = now_func().astimezone(jst)
+
+
 def main() -> None:
+    dry_run = os.environ.get("DRY_RUN", "true").lower() in {"1", "true", "yes"}
+    wait_until = os.environ.get("WAIT_UNTIL_JST", "").strip()
+    if wait_until and not dry_run:
+        print(f"Waiting until {wait_until} JST before publishing.")
+        wait_until_jst(wait_until)
+
     now = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     posts = choose_daily_posts(load_episodes(), now)
-    dry_run = os.environ.get("DRY_RUN", "true").lower() in {"1", "true", "yes"}
     for index, text in enumerate(posts, start=1):
         if weighted_length(text) > MAX_WEIGHTED_LENGTH:
             raise ValueError(f"Post {index} exceeds X's character limit.")
