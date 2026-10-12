@@ -30,6 +30,21 @@ class DailyPostTests(unittest.TestCase):
         self.assertTrue(any(title in second for title in ("One", "Two", "Three")))
         self.assertNotEqual(first, second)
 
+    def test_campaign_hashtag_is_added_only_during_the_one_week_window(self):
+        episodes = [
+            {"id": "1", "title": "Episode", "date": "2020-01-01", "url": "https://example.com/1"},
+            {"id": "2", "title": "Other", "date": "2020-01-02", "url": "https://example.com/2"},
+        ]
+        first, second = choose_daily_posts(episodes, date(2026, 10, 13), "#あばらや")
+        self.assertTrue(first.endswith("#あばらや"))
+        self.assertTrue(second.endswith("#あばらや"))
+        self.assertLessEqual(weighted_length(first), 280)
+        self.assertLessEqual(weighted_length(second), 280)
+
+        first, second = choose_daily_posts(episodes, date(2026, 10, 20))
+        self.assertNotIn("#あばらや", first)
+        self.assertNotIn("#あばらや", second)
+
     def test_post_length_counts_urls_as_fixed_weight(self):
         self.assertEqual(weighted_length("abc https://example.com"), 27)
 
