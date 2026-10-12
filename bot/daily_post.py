@@ -18,6 +18,9 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_WEIGHTED_LENGTH = 280
+HASHTAG_START = date(2026, 10, 13)
+HASHTAG_END = date(2026, 10, 19)
+CAMPAIGN_HASHTAG = "#あばらや"
 URL_RE = re.compile(r"https?://\S+")
 
 
@@ -56,12 +59,12 @@ def episode_label(episode: dict[str, Any]) -> str:
     return "旧" if episode.get("era") == "pre-r" else "R"
 
 
-def format_post(heading: str, episode: dict[str, Any]) -> str:
+def format_post(heading: str, episode: dict[str, Any], hashtag: str = "") -> str:
     title = str(episode.get("title") or "タイトル不明")
     url = str(episode.get("url") or "")
     label = episode_label(episode)
     def render(candidate: str) -> str:
-        return f"{heading}\n【{label}】{candidate}\n{url}".rstrip()
+        return f"{heading}\n【{label}】{candidate}\n{url}".rstrip() + (f"\n{hashtag}" if hashtag else "")
 
     if weighted_length(render(title)) <= MAX_WEIGHTED_LENGTH:
         return render(title)
@@ -77,7 +80,7 @@ def format_post(heading: str, episode: dict[str, Any]) -> str:
     return render(title[:low] + "…")
 
 
-def choose_daily_posts(episodes: list[dict[str, Any]], today: date) -> tuple[str, str]:
+def choose_daily_posts(episodes: list[dict[str, Any]], today: date, hashtag: str = "") -> tuple[str, str]:
     """Return the date-based post and a separate, distinct random post."""
     rng = random.Random(today.isoformat())
     ordered = sorted(episodes, key=lambda item: str(item.get("id") or item.get("url") or ""))
@@ -105,10 +108,10 @@ def choose_daily_posts(episodes: list[dict[str, Any]], today: date) -> tuple[str
         heading = (f"📅 {today.month}月{today.day}日に配信された回は"
                    f"見つかりませんでした。代わりに今日の1本")
     available.remove(daily_episode)
-    date_post = format_post(heading, daily_episode)
+    date_post = format_post(heading, daily_episode, hashtag)
 
     random_episode = rng.choice(available or ordered)
-    random_post = format_post("🎲 今日のランダムあばらや", random_episode)
+    random_post = format_post("🎲 今日のランダムあばらや", random_episode, hashtag)
     return date_post, random_post
 
 
@@ -170,7 +173,8 @@ def main() -> None:
     wait_until = os.environ.get("WAIT_UNTIL_JST", "").strip()
 
     now = datetime.now(ZoneInfo("Asia/Tokyo")).date()
-    posts = choose_daily_posts(load_episodes(), now)
+    hashtag = CAMPAIGN_HASHTAG if HASHTAG_START <= now <= HASHTAG_END else ""
+    posts = choose_daily_posts(load_episodes(), now, hashtag)
     for index, text in enumerate(posts, start=1):
         if weighted_length(text) > MAX_WEIGHTED_LENGTH:
             raise ValueError(f"Post {index} exceeds X's character limit.")
