@@ -18,6 +18,7 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_WEIGHTED_LENGTH = 280
+MAX_WAIT_SECONDS = 30 * 60
 HASHTAG_START = date(2026, 10, 13)
 HASHTAG_END = date(2026, 10, 19)
 CAMPAIGN_HASHTAG = "#あばらや"
@@ -147,8 +148,12 @@ def wait_until_jst(
     target: str,
     now_func: Callable[[], datetime] | None = None,
     sleep_func: Callable[[float], None] | None = None,
-) -> None:
-    """Wait until today's HH:MM in Japan time. If already past, continue immediately."""
+) -> bool:
+    """Wait for today's HH:MM in Japan time, but skip stale runs rather than waiting hours.
+
+    Returns True if it waited. Returns False if the deadline has passed or is more
+    than MAX_WAIT_SECONDS away, which usually means the scheduled run arrived late.
+    """
     try:
         hour, minute = (int(part) for part in target.split(":"))
     except (ValueError, TypeError) as exc:
@@ -162,10 +167,15 @@ def wait_until_jst(
     now = now_func().astimezone(jst)
     deadline = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
 
+    waited = False
     while now < deadline:
         remaining = (deadline - now).total_seconds()
+        if remaining > MAX_WAIT_SECONDS:
+            return False
         sleep_func(remaining)
+        waited = True
         now = now_func().astimezone(jst)
+    return waited
 
 
 def main() -> None:
@@ -181,7 +191,11 @@ def main() -> None:
 
     if wait_until and not dry_run:
         print(f"Waiting until {wait_until} JST before publishing.")
-        wait_until_jst(wait_until)
+        if not wait_until_jst(wait_until):
+            print(
+                "Skipping the wait because this run is stale or its target "
+                "is already past; publishing now."
+            )
 
     for index, text in enumerate(posts, start=1):
         print(f"--- Post {index} ({'preview' if dry_run else 'publishing'}) ---")
