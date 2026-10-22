@@ -47,8 +47,6 @@ class DailyPostTests(unittest.TestCase):
 
     def test_post_length_counts_urls_as_fixed_weight(self):
         self.assertEqual(weighted_length("abc https://example.com"), 27)
-
-
     def test_waits_until_target_in_japan_time(self):
         clock = [datetime(2026, 10, 12, 19, 59, 59, 500000, tzinfo=ZoneInfo("Asia/Tokyo"))]
         sleeps = []
@@ -57,7 +55,8 @@ class DailyPostTests(unittest.TestCase):
             sleeps.append(seconds)
             clock[0] += timedelta(seconds=seconds)
 
-        wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleep_for)
+        waited = wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleep_for)
+        self.assertTrue(waited)
         self.assertEqual(sleeps, [0.5])
         self.assertEqual(clock[0].strftime("%H:%M:%S"), "20:00:00")
 
@@ -66,10 +65,19 @@ class DailyPostTests(unittest.TestCase):
         sleeps = []
         wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleeps.append)
         self.assertEqual(sleeps, [])
+        self.assertFalse(wait_until_jst("20:00", now_func=lambda: clock[0], sleep_func=sleeps.append))
+
+    def test_skips_stale_run_instead_of_waiting_until_tonight(self):
+        now = datetime(2026, 10, 22, 0, 36, tzinfo=ZoneInfo("Asia/Tokyo"))
+        sleeps = []
+        waited = wait_until_jst("20:00", now_func=lambda: now, sleep_func=sleeps.append)
+        self.assertFalse(waited)
+        self.assertEqual(sleeps, [])
 
     def test_rejects_invalid_wait_time(self):
         with self.assertRaises(ValueError):
             wait_until_jst("25:00", now_func=lambda: datetime.now(ZoneInfo("Asia/Tokyo")))
+
 
 if __name__ == "__main__":
     unittest.main()
