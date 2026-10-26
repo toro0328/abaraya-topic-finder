@@ -19,6 +19,17 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v6
+      - name: Add daily refresh helper
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          tag = '<script src="./daily-refresh.js?v=20261027"></script>'
+          if tag not in html:
+              html = html.replace('</body>', tag + '\n</body>')
+              path.write_text(html, encoding='utf-8')
+          PY
       - name: Set up Pages
         uses: actions/configure-pages@v5
       - name: Upload site files
