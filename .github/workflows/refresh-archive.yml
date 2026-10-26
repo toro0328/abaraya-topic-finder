@@ -1,5 +1,9 @@
 name: Refresh podcast archive
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-archive.yml'
   schedule:
     # Saturday 22:05 JST
     - cron: '5 13 * * 6'
