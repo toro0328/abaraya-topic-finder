@@ -33,13 +33,14 @@ jobs:
           if needle in html and patch not in html:
               html = html.replace(needle, patch, 1)
 
-          # Put the full episode archive first, then topic discovery.
+          # Put the full episode archive first and make it the landing view.
           old_side = '<button class="nav active" data-view="topics">◉　話題から探す</button><button class="nav" data-view="videos">▶　動画から探す</button><button class="nav" data-view="episodes">▤　すべての回</button>'
-          new_side = '<button class="nav" data-view="episodes">▤　すべての回</button><button class="nav" data-view="videos">▶　動画から探す</button><button class="nav active" data-view="topics">◉　話題から探す</button>'
+          new_side = '<button class="nav active" data-view="episodes">▤　すべての回</button><button class="nav" data-view="videos">▶　動画から探す</button><button class="nav" data-view="topics">◉　話題から探す</button>'
           html = html.replace(old_side, new_side, 1)
           old_mobile = '<button class="on" data-view="topics">話題</button><button data-view="videos">動画</button><button data-view="episodes">全回</button>'
-          new_mobile = '<button data-view="episodes">全回</button><button data-view="videos">動画</button><button class="on" data-view="topics">話題</button>'
+          new_mobile = '<button class="on" data-view="episodes">全回</button><button data-view="videos">動画</button><button data-view="topics">話題</button>'
           html = html.replace(old_mobile, new_mobile, 1)
+          html = html.replace("let db=null,view='topics',topic='6秒ライブ'", "let db=null,view='episodes',topic='6秒ライブ'", 1)
           path.write_text(html, encoding='utf-8')
           PY
       - name: Set up Pages
