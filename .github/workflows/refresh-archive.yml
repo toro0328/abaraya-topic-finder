@@ -3,6 +3,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'bot/refresh_archive.py'
       - '.github/workflows/refresh-archive.yml'
   schedule:
     # Saturday 22:05 JST
