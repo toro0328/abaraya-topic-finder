@@ -1,0 +1,32 @@
+name: Refresh podcast archive
+on:
+  schedule:
+    # Saturday 22:05 JST
+    - cron: '5 13 * * 6'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: refresh-podcast-archive
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Refresh archive
+        run: python bot/refresh_archive.py
+      - name: Commit new episodes
+        run: |
+          if git diff --quiet -- archive.json.gz.b64; then
+            echo 'No archive changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add archive.json.gz.b64
+          git commit -m 'Refresh podcast archive'
+          git push
