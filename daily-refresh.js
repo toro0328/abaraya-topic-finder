@@ -27,4 +27,5 @@
     if(!document.hidden)refreshIfDateChanged();
   });
   window.addEventListener('focus',refreshIfDateChanged);
+  // Build marker: archive compatibility fix deployed 2026-10-27.
 })();
