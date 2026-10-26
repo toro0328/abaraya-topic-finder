@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v6
-      - name: Add daily refresh helper
+      - name: Add daily refresh helper and normalize archive records
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -28,7 +28,11 @@ jobs:
           tag = '<script src="./daily-refresh.js?v=20261027"></script>'
           if tag not in html:
               html = html.replace('</body>', tag + '\n</body>')
-              path.write_text(html, encoding='utf-8')
+          needle = ").then(data=>fetch('./legacy-episodes.json?v=20261009-fix1')"
+          patch = ").then(data=>{for(const e of data.episodes||[]){e.chapters??=[];e.tags??=[];e.mentions??=[];e.corners??=[];e.summary??=e.description||''}return data}).then(data=>fetch('./legacy-episodes.json?v=20261009-fix1')"
+          if needle in html and patch not in html:
+              html = html.replace(needle, patch, 1)
+          path.write_text(html, encoding='utf-8')
           PY
       - name: Set up Pages
         uses: actions/configure-pages@v5
