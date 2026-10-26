@@ -6,8 +6,8 @@ on:
       - 'bot/refresh_archive.py'
       - '.github/workflows/refresh-archive.yml'
   schedule:
-    # Saturday 22:05 JST
-    - cron: '5 13 * * 6'
+    # Daily 09:05 JST: fetch new episodes, audio URLs, and LISTEN chapters.
+    - cron: '5 0 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Refresh archive
         run: python bot/refresh_archive.py
-      - name: Commit new episodes
+      - name: Commit archive changes
         run: |
           if git diff --quiet -- archive.json.gz.b64; then
             echo 'No archive changes.'
