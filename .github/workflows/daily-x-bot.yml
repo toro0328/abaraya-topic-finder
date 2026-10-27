@@ -2,8 +2,9 @@ name: Daily Ababaya X posts
 
 on:
   schedule:
-    # Start at 19:40 JST (10:40 UTC), then wait until 20:00 JST before posting.
-    - cron: "40 10 * * *"
+    # GitHub scheduled workflows can start late. Start early, then the bot waits
+    # inside the runner until exactly 20:00 JST before publishing.
+    - cron: "30 10 * * *" # 19:30 JST
   workflow_dispatch:
     inputs:
       dry_run:
@@ -22,6 +23,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     env:
       DRY_RUN: ${{ github.event_name == 'schedule' && 'false' || inputs.dry_run }}
       WAIT_UNTIL_JST: ${{ github.event_name == 'schedule' && '20:00' || '' }}
@@ -30,13 +32,13 @@ jobs:
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
       X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install dependencies
         run: python -m pip install -r bot/requirements.txt
       - name: Verify post selection
         run: python -m unittest discover -s bot -p 'test_*.py'
-      - name: Preview or publish
+      - name: Preview or publish at 20:00 JST
         run: python bot/daily_post.py
