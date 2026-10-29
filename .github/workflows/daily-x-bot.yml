@@ -1,10 +1,11 @@
 name: Daily Ababaya X posts
 
 on:
+  # Keep this schedule declaration fresh: GitHub can stop delivering cron events
+  # to workflows that have been inactive/changed without a new schedule registration.
   schedule:
-    # GitHub scheduled workflows can start late. Start early, then the bot waits
-    # inside the runner until exactly 20:00 JST before publishing.
-    - cron: "30 10 * * *" # 19:30 JST
+    # Start before 20:00 JST. daily_post.py waits until 20:00 JST to publish.
+    - cron: "27 10 * * *" # 19:27 JST
   workflow_dispatch:
     inputs:
       dry_run:
