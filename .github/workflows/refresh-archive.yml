@@ -26,12 +26,12 @@ jobs:
         run: python bot/refresh_archive.py
       - name: Commit archive changes
         run: |
-          if git diff --quiet -- archive.json.gz.b64; then
+          if git diff --quiet -- archive.json.gz.b64 archive-refresh-status.txt; then
             echo 'No archive changes.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add archive.json.gz.b64
+          git add archive.json.gz.b64 archive-refresh-status.txt
           git commit -m 'Refresh podcast archive'
           git push
