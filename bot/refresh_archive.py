@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "archive.json.gz.b64"
+STATUS = ROOT / "archive-refresh-status.txt"
 FEEDS = ["https://abaraya204.com/feed/","https://anchor.fm/s/15a8cbe8/podcast/rss","https://feeds.soundcloud.com/users/soundcloud:users:161303585/sounds.rss"]
 LISTEN_INDEX = "https://listen.style/p/abaraya204"
 UA = {"User-Agent":"Mozilla/5.0 abaraya-topic-finder/1.3"}
@@ -118,5 +119,12 @@ def main():
     enrich_from_listen(recent_missing)
     archive["episodes"]=episodes;archive["refreshedAt"]=datetime.now().astimezone().isoformat();archive["feedUrl"]=feed_url
     raw=json.dumps(archive,ensure_ascii=False,separators=(",",":")).encode();ARCHIVE.write_text(base64.b64encode(gzip.compress(raw,mtime=0)).decode(),encoding="utf-8")
+    latest=max((e for e in episodes if e.get("era")=="r" and isinstance(e.get("episode"),int)),key=lambda e:e["episode"],default=None)
+    STATUS.write_text("\n".join([
+        f"Last archive refresh: {archive['refreshedAt']}",
+        f"New episodes this run: {len(added)}",
+        f"Latest in archive: {latest['title'] if latest else 'none'}",
+        f"Latest chapter count: {len(latest.get('chapters') or []) if latest else 0}",
+    ])+"\n",encoding="utf-8")
     print(json.dumps({"feed":feed_url,"added":len(added),"titles":[e["title"] for e in added],"audio_backfilled":audio_filled,"listen_enriched":[e.get('episode') for e in recent_missing if e.get('chapters')]},ensure_ascii=False))
 if __name__=="__main__":main()
