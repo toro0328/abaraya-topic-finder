@@ -8,6 +8,8 @@ on:
   schedule:
     # Daily 09:05 JST: fetch new episodes, audio URLs, and LISTEN chapters.
     - cron: '5 0 * * *'
+    # Saturday evening JST: refresh again after the weekly release.
+    - cron: '15 12 * * 6'
   workflow_dispatch:
 permissions:
   contents: write
